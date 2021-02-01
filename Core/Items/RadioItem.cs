@@ -7,7 +7,7 @@ namespace Core.Items
         private string _text = null!;
         private string? _description;
 
-        public long Id { get; set; }
+        public int Id { get; set; }
 
         public string Text
         {

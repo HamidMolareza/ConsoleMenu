@@ -36,35 +36,23 @@ namespace Core.Menus
 
         public RadioMenu AddItem(RadioItem radioItem)
         {
-            radioItem.Id = GetNextId();
             Items.Add(radioItem);
             return this;
         }
 
-        private long GetNextId()
-        {
-            var items = Items.GetItems<RadioItem>().ToList();
-            return items.Any() ? items.Last().Id + 1 : 0;
-        }
-        
         public RadioMenu AddItems(IEnumerable<RadioItem> radioItems)
         {
-            var nextId = GetNextId();
-            
             foreach (var radioItem in radioItems)
-            {
-                radioItem.Id = nextId;
-                nextId++;
                 Items.Add(radioItem);
-            }
-            
+
             return this;
         }
 
         public RadioItem? Run()
         {
             var radioItems = Items.GetItems<RadioItem>().ToList();
-            var selectedId = radioItems.Any() ? radioItems.First().Id : 0;
+            InitIds(radioItems);
+            var selectedId = 0;
             ResetColors();
 
             do
@@ -91,6 +79,12 @@ namespace Core.Menus
                     Console.Beep();
                 } while (true);
             } while (true);
+        }
+
+        private static void InitIds(IReadOnlyList<RadioItem> radioItems)
+        {
+            for (var i = 0; i < radioItems.Count; i++)
+                radioItems[i].Id = i;
         }
 
         private void PrintItems(IEnumerable<object> items, long selectedId)
@@ -183,7 +177,7 @@ namespace Core.Menus
             Console.ForegroundColor = DefaultTextColor;
         }
 
-        private static long SetSelectedKey(List<RadioItem> radioItems, long oldSelectedId, ConsoleKey consoleKey)
+        private static int SetSelectedKey(List<RadioItem> radioItems, int oldSelectedId, ConsoleKey consoleKey)
         {
             var index = radioItems.FindIndex(a => a.Id == oldSelectedId);
             switch (consoleKey)
