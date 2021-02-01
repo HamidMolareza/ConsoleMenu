@@ -19,7 +19,9 @@ var selectedItem = new RadioMenu()
     .AddItem(new RadioItem("Cancel"))
     .Run();
 
-Console.WriteLine($"Selected item: {selectedIte.Text}");
+Console.WriteLine($"Selected item: {selectedItem.Text}");
 ```
 
+## LICENSE
 
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT). :)
