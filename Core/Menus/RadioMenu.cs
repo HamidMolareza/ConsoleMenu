@@ -65,6 +65,7 @@ namespace Core.Menus
         {
             var radioItems = Items.GetItems<RadioItem>().ToList();
             var selectedId = radioItems.Any() ? radioItems.First().Id : 0;
+            ResetColors();
 
             do
             {
@@ -111,7 +112,7 @@ namespace Core.Menus
                 Console.Write($"{circleItem} ");
                 Console.Write(radioItem.Text);
 
-                Console.Write('\t');
+                Console.Write("        "); //TODO: ****
 
                 SetDescriptionColor(radioItem, selectedId);
                 Console.WriteLine(radioItem.Description);
@@ -138,26 +139,26 @@ namespace Core.Menus
 
         private void SetColor(SeparationItem separationItem)
         {
-            Console.ForegroundColor = separationItem.BackgroundColor ?? DefaultBackgroundColor;
+            Console.BackgroundColor = separationItem.BackgroundColor ?? DefaultBackgroundColor;
             Console.ForegroundColor = separationItem.TextColor ?? DefaultTextColor;
         }
 
         private void SetColor(RadioItem radioItem, long selectedId)
         {
-            Console.ForegroundColor =
+            Console.BackgroundColor =
                 radioItem.Id == selectedId ? ActiveItemBackgroundColor : GetBackgroundColor(radioItem);
             Console.ForegroundColor = radioItem.Id == selectedId ? ActiveItemTextColor : GetTextColor(radioItem);
         }
 
         private void SetColor(TextItem textItem)
         {
-            Console.ForegroundColor = textItem.BackgroundTextColor ?? DefaultBackgroundColor;
+            Console.BackgroundColor = textItem.BackgroundTextColor ?? DefaultBackgroundColor;
             Console.ForegroundColor = textItem.TextColor ?? DefaultTextColor;
         }
 
         private void SetDescriptionColor(RadioItem radioItem, long selectedId)
         {
-            Console.ForegroundColor =
+            Console.BackgroundColor =
                 radioItem.Id == selectedId ? ActiveItemBackgroundColor : GetDescriptionBackgroundColor(radioItem);
             Console.ForegroundColor =
                 radioItem.Id == selectedId ? ActiveItemTextColor : GetDescriptionTextColor(radioItem);
@@ -177,6 +178,7 @@ namespace Core.Menus
 
         private void ResetColors()
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.BackgroundColor = DefaultBackgroundColor;
             Console.ForegroundColor = DefaultTextColor;
         }
