@@ -52,7 +52,7 @@ namespace Core.Menus
         {
             var radioItems = Items.GetItems<RadioItem>().ToList();
             InitIds(radioItems);
-            var selectedId = 0;
+            var selectedId = FindNextActiveItem(radioItems, -1);
             ResetColors();
 
             do
@@ -69,7 +69,7 @@ namespace Core.Menus
                     if (consoleKey == ConsoleKey.Enter)
                         return radioItems.Single(item => item.Id == selectedId);
 
-                    var newSelectedId = SetSelectedKey(radioItems, selectedId, consoleKey);
+                    var newSelectedId = FindSelectedId(radioItems, selectedId, consoleKey);
                     if (newSelectedId != selectedId)
                     {
                         selectedId = newSelectedId;
@@ -177,25 +177,40 @@ namespace Core.Menus
             Console.ForegroundColor = DefaultTextColor;
         }
 
-        private static int SetSelectedKey(List<RadioItem> radioItems, int oldSelectedId, ConsoleKey consoleKey)
+        private static int FindSelectedId(IReadOnlyList<RadioItem> radioItems, int currentSelectedId,
+            ConsoleKey consoleKey)
         {
-            var index = radioItems.FindIndex(a => a.Id == oldSelectedId);
             switch (consoleKey)
             {
                 case ConsoleKey.DownArrow:
-                    index += 1;
-                    break;
+                    return FindNextActiveItem(radioItems, currentSelectedId);
                 case ConsoleKey.UpArrow:
-                    index -= 1;
-                    break;
+                    return FindPrevActiveItem(radioItems, currentSelectedId);
                 default:
-                    return oldSelectedId;
+                    return currentSelectedId;
+            }
+        }
+
+        private static int FindNextActiveItem(IReadOnlyList<RadioItem> radioItems, int currentId)
+        {
+            for (var i = currentId + 1; i < radioItems.Count; i++)
+            {
+                if (!radioItems[i].IsDisable)
+                    return i;
             }
 
-            if (index >= 0 && index < radioItems.Count)
-                return radioItems[index].Id;
+            return currentId;
+        }
 
-            return oldSelectedId;
+        private static int FindPrevActiveItem(IReadOnlyList<RadioItem> radioItems, int currentId)
+        {
+            for (var i = currentId - 1; i >= 0; i--)
+            {
+                if (!radioItems[i].IsDisable)
+                    return i;
+            }
+
+            return currentId;
         }
     }
 }
