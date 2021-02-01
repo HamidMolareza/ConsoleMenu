@@ -139,9 +139,10 @@ namespace Core.Menus
 
         private void SetColor(RadioItem radioItem, long selectedId)
         {
-            Console.BackgroundColor =
+            Console.BackgroundColor = radioItem.IsDisable ? DisableItemBackgroundColor :
                 radioItem.Id == selectedId ? ActiveItemBackgroundColor : GetBackgroundColor(radioItem);
-            Console.ForegroundColor = radioItem.Id == selectedId ? ActiveItemTextColor : GetTextColor(radioItem);
+            Console.ForegroundColor = radioItem.IsDisable ? DisableItemTextColor :
+                radioItem.Id == selectedId ? ActiveItemTextColor : GetTextColor(radioItem);
         }
 
         private void SetColor(TextItem textItem)
@@ -152,9 +153,9 @@ namespace Core.Menus
 
         private void SetDescriptionColor(RadioItem radioItem, long selectedId)
         {
-            Console.BackgroundColor =
+            Console.BackgroundColor = radioItem.IsDisable ? DisableItemBackgroundColor :
                 radioItem.Id == selectedId ? ActiveItemBackgroundColor : GetDescriptionBackgroundColor(radioItem);
-            Console.ForegroundColor =
+            Console.ForegroundColor = radioItem.IsDisable ? DisableItemTextColor :
                 radioItem.Id == selectedId ? ActiveItemTextColor : GetDescriptionTextColor(radioItem);
         }
 

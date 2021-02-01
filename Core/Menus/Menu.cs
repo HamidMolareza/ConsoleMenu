@@ -13,6 +13,9 @@ namespace Core.Menus
         public ConsoleColor ActiveItemBackgroundColor { get; set; }
         public ConsoleColor ActiveItemTextColor { get; set; }
 
+        public ConsoleColor DisableItemBackgroundColor { get; set; }
+        public ConsoleColor DisableItemTextColor { get; set; }
+
         public ConsoleColor DefaultDescriptionBackgroundColor { get; set; }
         public ConsoleColor DefaultDescriptionTextColor { get; set; }
 
@@ -24,13 +27,19 @@ namespace Core.Menus
 
         protected Menu(ConsoleColor? defaultBackgroundColor = null, ConsoleColor? defaultTextColor = null,
             ConsoleColor? activeItemBackgroundColor = null, ConsoleColor activeItemTextColor = ConsoleColor.Blue,
+            ConsoleColor? disableItemBackgroundColor = null, ConsoleColor disableItemTextColor = ConsoleColor.DarkGray,
             ConsoleColor? defaultDescriptionBackgroundColor = null,
             ConsoleColor defaultDescriptionTextColor = ConsoleColor.Gray)
         {
             DefaultBackgroundColor = defaultBackgroundColor ?? Console.BackgroundColor;
             DefaultTextColor = defaultTextColor ?? Console.ForegroundColor;
+
             ActiveItemBackgroundColor = activeItemBackgroundColor ?? DefaultBackgroundColor;
             ActiveItemTextColor = activeItemTextColor;
+
+            DisableItemBackgroundColor = disableItemBackgroundColor ?? DefaultBackgroundColor;
+            DisableItemTextColor = disableItemTextColor;
+
             DefaultDescriptionBackgroundColor = defaultDescriptionBackgroundColor ?? DefaultBackgroundColor;
             DefaultDescriptionTextColor = defaultDescriptionTextColor;
         }
