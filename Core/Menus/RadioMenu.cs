@@ -7,6 +7,9 @@ namespace Core.Menus
 {
     public class RadioMenu : Menu
     {
+        private const string Circle = "\u25CB";
+        private const string BlackCircle = "\u25CF";
+
         public RadioMenu(ConsoleColor? defaultBackgroundColor = null, ConsoleColor? defaultTextColor = null,
             ConsoleColor? activeItemBackgroundColor = null, ConsoleColor activeItemTextColor = ConsoleColor.Blue,
             ConsoleColor? defaultDescriptionBackgroundColor = null,
@@ -22,11 +25,15 @@ namespace Core.Menus
             return this;
         }
 
-        public RadioMenu AddSeparation()
-        {
-            Items.Add(new SeparationItem());
-            return this;
-        }
+        public RadioMenu AddText(string text, ConsoleColor? backgroundTextColor = null,
+            ConsoleColor? textColor = null) =>
+            AddText(new TextItem(text, backgroundTextColor, textColor));
+
+        public RadioMenu AddSeparation() =>
+            AddSeparation(new SeparationItem());
+
+        public RadioMenu AddSeparation(string separator) =>
+            AddSeparation(new SeparationItem(separator));
 
         public RadioMenu AddSeparation(SeparationItem separationItem)
         {
@@ -39,6 +46,10 @@ namespace Core.Menus
             Items.Add(radioItem);
             return this;
         }
+
+        public RadioMenu AddItem(string text, ConsoleColor? backgroundTextColor = null,
+            ConsoleColor? textColor = null, bool isDisable = false) =>
+            AddItem(new RadioItem(text, backgroundTextColor, textColor, isDisable));
 
         public RadioMenu AddItems(IEnumerable<RadioItem> radioItems)
         {
@@ -101,21 +112,28 @@ namespace Core.Menus
             if (itemType == typeof(RadioItem))
             {
                 var radioItem = (RadioItem) item;
-                SetColor(radioItem, selectedId);
-                var circleItem = radioItem.Id == selectedId ? "\u25CF" : "\u25CB";
-                Console.Write($"{circleItem} ");
-                Console.Write(radioItem.Text);
+                var isActive = radioItem.Id == selectedId;
 
-                Console.Write("        "); //TODO: ****
+                Action setColorAction = radioItem.IsDisable ? SetDisableItemColor :
+                    isActive ? SetActiveItemColor : () => SetColor(radioItem.TextItems.First());
 
-                SetDescriptionColor(radioItem, selectedId);
-                Console.WriteLine(radioItem.Description);
+                var circleType = radioItem.IsDisable ? Circle :
+                    isActive ? BlackCircle : Circle;
+
+                const string separator = "        ";
+                Action printItems = radioItem.IsDisable ? () => PrintTextItems(radioItem.TextItems, separator, false) :
+                    isActive ? () => PrintTextItems(radioItem.TextItems, separator, false) :
+                    () => PrintTextItems(radioItem.TextItems, separator);
+
+                setColorAction();
+                Console.Write($"{circleType} ");
+                printItems();
+
+                Console.WriteLine();
             }
             else if (itemType == typeof(TextItem))
             {
-                var textItem = (TextItem) item;
-                SetColor(textItem);
-                Console.WriteLine(textItem.Text);
+                PrintTextItem((TextItem) item, "\n");
             }
             else if (itemType == typeof(SeparationItem))
             {
@@ -131,19 +149,45 @@ namespace Core.Menus
             }
         }
 
+        private void PrintTextItems(IEnumerable<TextItem> textItems, string separator, bool setColor = true)
+        {
+            foreach (var textItem in textItems)
+                PrintTextItem(textItem, separator, setColor);
+        }
+
+        private void PrintTextItem(TextItem textItem, string separator, bool setColor = true)
+        {
+            if (setColor)
+                SetColor(textItem);
+            Console.Write(textItem.Text);
+            Console.Write(separator);
+        }
+
         private void SetColor(SeparationItem separationItem)
         {
             Console.BackgroundColor = separationItem.BackgroundColor ?? DefaultBackgroundColor;
             Console.ForegroundColor = separationItem.TextColor ?? DefaultTextColor;
         }
 
-        private void SetColor(RadioItem radioItem, long selectedId)
+        private void SetDisableItemColor()
         {
-            Console.BackgroundColor = radioItem.IsDisable ? DisableItemBackgroundColor :
-                radioItem.Id == selectedId ? ActiveItemBackgroundColor : GetBackgroundColor(radioItem);
-            Console.ForegroundColor = radioItem.IsDisable ? DisableItemTextColor :
-                radioItem.Id == selectedId ? ActiveItemTextColor : GetTextColor(radioItem);
+            Console.BackgroundColor = DisableItemBackgroundColor;
+            Console.ForegroundColor = DisableItemTextColor;
         }
+
+        private void SetActiveItemColor()
+        {
+            Console.BackgroundColor = ActiveItemBackgroundColor;
+            Console.ForegroundColor = ActiveItemTextColor;
+        }
+
+        // private void SetColor(RadioItem radioItem, long selectedId)
+        // {
+        //     Console.BackgroundColor = radioItem.IsDisable ? DisableItemBackgroundColor :
+        //         radioItem.Id == selectedId ? ActiveItemBackgroundColor : GetBackgroundColor(radioItem);
+        //     Console.ForegroundColor = radioItem.IsDisable ? DisableItemTextColor :
+        //         radioItem.Id == selectedId ? ActiveItemTextColor : GetTextColor(radioItem);
+        // }
 
         private void SetColor(TextItem textItem)
         {
@@ -151,25 +195,25 @@ namespace Core.Menus
             Console.ForegroundColor = textItem.TextColor ?? DefaultTextColor;
         }
 
-        private void SetDescriptionColor(RadioItem radioItem, long selectedId)
-        {
-            Console.BackgroundColor = radioItem.IsDisable ? DisableItemBackgroundColor :
-                radioItem.Id == selectedId ? ActiveItemBackgroundColor : GetDescriptionBackgroundColor(radioItem);
-            Console.ForegroundColor = radioItem.IsDisable ? DisableItemTextColor :
-                radioItem.Id == selectedId ? ActiveItemTextColor : GetDescriptionTextColor(radioItem);
-        }
+        // private void SetDescriptionColor(RadioItem radioItem, long selectedId)
+        // {
+        //     Console.BackgroundColor = radioItem.IsDisable ? DisableItemBackgroundColor :
+        //         radioItem.Id == selectedId ? ActiveItemBackgroundColor : GetDescriptionBackgroundColor(radioItem);
+        //     Console.ForegroundColor = radioItem.IsDisable ? DisableItemTextColor :
+        //         radioItem.Id == selectedId ? ActiveItemTextColor : GetDescriptionTextColor(radioItem);
+        // }
 
-        private ConsoleColor GetBackgroundColor(RadioItem item) =>
-            item.BackgroundTextColor ?? DefaultBackgroundColor;
-
-        private ConsoleColor GetTextColor(RadioItem item) =>
-            item.TextColor ?? DefaultTextColor;
-
-        private ConsoleColor GetDescriptionBackgroundColor(RadioItem item) =>
-            item.DescriptionBackgroundColor ?? DefaultDescriptionBackgroundColor;
-
-        private ConsoleColor GetDescriptionTextColor(RadioItem item) =>
-            item.DescriptionTextColor ?? DefaultDescriptionTextColor;
+        // private ConsoleColor GetBackgroundColor(RadioItem item) =>
+        //     item.BackgroundTextColor ?? DefaultBackgroundColor;
+        //
+        // private ConsoleColor GetTextColor(RadioItem item) =>
+        //     item.TextColor ?? DefaultTextColor;
+        //
+        // private ConsoleColor GetDescriptionBackgroundColor(RadioItem item) =>
+        //     item.DescriptionBackgroundColor ?? DefaultDescriptionBackgroundColor;
+        //
+        // private ConsoleColor GetDescriptionTextColor(RadioItem item) =>
+        //     item.DescriptionTextColor ?? DefaultDescriptionTextColor;
 
         private void ResetColors()
         {

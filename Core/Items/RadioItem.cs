@@ -1,55 +1,45 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Core.Items
 {
     public class RadioItem
     {
-        private string _text = null!;
-        private string? _description;
-
+        private List<TextItem> _textItems = null!;
         public int Id { get; set; }
 
-        public string Text
+        public List<TextItem> TextItems
         {
-            get => _text;
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentException($"Value can not be null ro white-space.", nameof(Text));
-                _text = value;
-            }
+            get => _textItems;
+            set => _textItems = value ?? new List<TextItem>();
         }
 
-        public string? Description
-        {
-            get => _description;
-            set
-            {
-                if (value is not null && value.IsWhiteSpace())
-                    throw new ArgumentException("Value can not be white space.", nameof(Description));
-                _description = value;
-            }
-        }
-
-        public ConsoleColor? BackgroundTextColor { get; set; }
-        public ConsoleColor? TextColor { get; set; }
-
-        public ConsoleColor? DescriptionBackgroundColor { get; set; }
-        public ConsoleColor? DescriptionTextColor { get; set; }
         public bool IsDisable { get; set; } = false;
 
-        public RadioItem(string text, string? description = null, ConsoleColor? backgroundTextColor = null,
-            ConsoleColor? textColor = null, ConsoleColor? descriptionBackgroundColor = null,
-            ConsoleColor? descriptionTextColor = null,
-            bool isDisable = false)
+        public RadioItem(string text, ConsoleColor? backgroundTextColor = null,
+            ConsoleColor? textColor = null, bool isDisable = false)
         {
-            Text = text;
-            Description = description;
-            BackgroundTextColor = backgroundTextColor;
-            TextColor = textColor;
-            DescriptionBackgroundColor = descriptionBackgroundColor;
-            DescriptionTextColor = descriptionTextColor;
+            if (string.IsNullOrWhiteSpace(text))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
+
+            TextItems = new List<TextItem>();
             IsDisable = isDisable;
+            AddText(new TextItem(text, backgroundTextColor, textColor));
+        }
+
+        public RadioItem(List<TextItem> textItems, bool isDisable = false)
+        {
+            if (textItems is null || !textItems.Any())
+                throw new ArgumentException("Value can not be null or empty.", nameof(textItems));
+            TextItems = textItems;
+            IsDisable = isDisable;
+        }
+
+        public RadioItem AddText(TextItem textItem)
+        {
+            TextItems.Add(textItem);
+            return this;
         }
     }
 }
