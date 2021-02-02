@@ -181,39 +181,11 @@ namespace Core.Menus
             Console.ForegroundColor = ActiveItemTextColor;
         }
 
-        // private void SetColor(RadioItem radioItem, long selectedId)
-        // {
-        //     Console.BackgroundColor = radioItem.IsDisable ? DisableItemBackgroundColor :
-        //         radioItem.Id == selectedId ? ActiveItemBackgroundColor : GetBackgroundColor(radioItem);
-        //     Console.ForegroundColor = radioItem.IsDisable ? DisableItemTextColor :
-        //         radioItem.Id == selectedId ? ActiveItemTextColor : GetTextColor(radioItem);
-        // }
-
         private void SetColor(TextItem textItem)
         {
             Console.BackgroundColor = textItem.BackgroundTextColor ?? DefaultBackgroundColor;
             Console.ForegroundColor = textItem.TextColor ?? DefaultTextColor;
         }
-
-        // private void SetDescriptionColor(RadioItem radioItem, long selectedId)
-        // {
-        //     Console.BackgroundColor = radioItem.IsDisable ? DisableItemBackgroundColor :
-        //         radioItem.Id == selectedId ? ActiveItemBackgroundColor : GetDescriptionBackgroundColor(radioItem);
-        //     Console.ForegroundColor = radioItem.IsDisable ? DisableItemTextColor :
-        //         radioItem.Id == selectedId ? ActiveItemTextColor : GetDescriptionTextColor(radioItem);
-        // }
-
-        // private ConsoleColor GetBackgroundColor(RadioItem item) =>
-        //     item.BackgroundTextColor ?? DefaultBackgroundColor;
-        //
-        // private ConsoleColor GetTextColor(RadioItem item) =>
-        //     item.TextColor ?? DefaultTextColor;
-        //
-        // private ConsoleColor GetDescriptionBackgroundColor(RadioItem item) =>
-        //     item.DescriptionBackgroundColor ?? DefaultDescriptionBackgroundColor;
-        //
-        // private ConsoleColor GetDescriptionTextColor(RadioItem item) =>
-        //     item.DescriptionTextColor ?? DefaultDescriptionTextColor;
 
         private void ResetColors()
         {
