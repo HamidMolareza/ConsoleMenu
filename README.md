@@ -11,15 +11,15 @@
 
 ```csharp
 var selectedItem = new RadioMenu()
-    .AddText(new TextItem("Title"))
-    .AddSeparation(new SeparationItem("-"))
-    .AddItem(new RadioItem("Item-1"))
-    .AddItem(new RadioItem("Item-2"))
+    .AddText("Title")
+    .AddSeparation("-")
+    .AddItem("Item-1", isDisable: true)
+    .AddItem("Item-2")
     .AddSeparation()
-    .AddItem(new RadioItem("Cancel"))
+    .AddItem("Cancel")
     .Run();
 
-Console.WriteLine($"Selected item: {selectedItem.Text}");
+Console.WriteLine($"Selected ID: {selectedItem?.Id}");
 ```
 
 ## LICENSE
