@@ -63,9 +63,9 @@ namespace Core.Menus
         {
             var radioItems = Items.GetItems<RadioItem>().ToList();
             InitIds(radioItems);
-            var selectedId = FindNextActiveItem(radioItems, -1);
             ResetColors();
 
+            var selectedId = FindNextActiveItem(radioItems, -1);
             do
             {
                 Console.Clear();
@@ -98,7 +98,7 @@ namespace Core.Menus
                 radioItems[i].Id = i;
         }
 
-        private void PrintItems(IEnumerable<object> items, long selectedId)
+        private void PrintItems(IEnumerable<object> items, int selectedId)
         {
             foreach (var item in items)
                 PrintItem(item, selectedId);
@@ -106,42 +106,20 @@ namespace Core.Menus
             ResetColors();
         }
 
-        private void PrintItem(object item, long selectedId)
+        private void PrintItem(object item, int selectedId)
         {
             var itemType = item.GetType();
             if (itemType == typeof(RadioItem))
             {
-                var radioItem = (RadioItem) item;
-                var isActive = radioItem.Id == selectedId;
-
-                Action setColorAction = radioItem.IsDisable ? SetDisableItemColor :
-                    isActive ? SetActiveItemColor : () => SetColor(radioItem.TextItems.First());
-
-                var circleType = radioItem.IsDisable ? Circle :
-                    isActive ? BlackCircle : Circle;
-
-                const string separator = "        ";
-                Action printItems = radioItem.IsDisable ? () => PrintTextItems(radioItem.TextItems, separator, false) :
-                    isActive ? () => PrintTextItems(radioItem.TextItems, separator, false) :
-                    () => PrintTextItems(radioItem.TextItems, separator);
-
-                setColorAction();
-                Console.Write($"{circleType} ");
-                printItems();
-
-                Console.WriteLine();
+                Print((RadioItem) item, selectedId);
             }
             else if (itemType == typeof(TextItem))
             {
-                PrintTextItem((TextItem) item, "\n");
+                Print((TextItem) item, "\n");
             }
             else if (itemType == typeof(SeparationItem))
             {
-                var separationItem = (SeparationItem) item;
-                SetColor(separationItem);
-                for (var i = 0; i < 20; i++) //TODO: ***
-                    Console.Write(separationItem.Separator);
-                Console.WriteLine();
+                Print((SeparationItem) item);
             }
             else
             {
@@ -149,13 +127,41 @@ namespace Core.Menus
             }
         }
 
+        private void Print(SeparationItem separationItem)
+        {
+            SetColor(separationItem);
+            for (var i = 0; i < 20; i++) //TODO: ***
+                Console.Write(separationItem.Separator);
+            Console.WriteLine();
+        }
+
+        private void Print(RadioItem radioItem, int selectedId)
+        {
+            var isActive = radioItem.Id == selectedId;
+
+            Action setColorAction = radioItem.IsDisable ? SetDisableItemColor :
+                isActive ? SetActiveItemColor : () => SetColor(radioItem.TextItems.First());
+
+            var circleType = radioItem.IsDisable || !isActive ? Circle : BlackCircle;
+
+            const string separator = "        "; //TODO: ****
+            Action printItems = radioItem.IsDisable || isActive
+                ? () => PrintTextItems(radioItem.TextItems, separator, false)
+                : () => PrintTextItems(radioItem.TextItems, separator);
+
+            setColorAction();
+            Console.Write($"{circleType} ");
+            printItems();
+            Console.WriteLine();
+        }
+
         private void PrintTextItems(IEnumerable<TextItem> textItems, string separator, bool setColor = true)
         {
             foreach (var textItem in textItems)
-                PrintTextItem(textItem, separator, setColor);
+                Print(textItem, separator, setColor);
         }
 
-        private void PrintTextItem(TextItem textItem, string separator, bool setColor = true)
+        private void Print(TextItem textItem, string separator, bool setColor = true)
         {
             if (setColor)
                 SetColor(textItem);
