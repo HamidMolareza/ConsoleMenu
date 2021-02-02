@@ -2,7 +2,7 @@ using System;
 
 namespace Core.Items
 {
-    public class TextItem
+    public sealed class TextItem : Item
     {
         private string _text = null!;
 
@@ -20,11 +20,20 @@ namespace Core.Items
         public ConsoleColor? BackgroundTextColor { get; set; }
         public ConsoleColor? TextColor { get; set; }
 
-        public TextItem(string text, ConsoleColor? backgroundTextColor = null, ConsoleColor? textColor = null)
+        public override int MaxWidth
+        {
+            get => Text.Length;
+            protected set { }
+        }
+
+        public TextItem(string text, ConsoleColor? backgroundTextColor = null, ConsoleColor? textColor = null,
+            int? leftMargin = null, int? rightMargin = null)
         {
             Text = text;
             BackgroundTextColor = backgroundTextColor;
             TextColor = textColor;
+            LeftMargin = leftMargin;
+            RightMargin = rightMargin;
         }
     }
 }

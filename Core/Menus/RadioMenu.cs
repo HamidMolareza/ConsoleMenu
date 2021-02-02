@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Extensions;
 using Core.Items;
 
 namespace Core.Menus
@@ -13,9 +14,12 @@ namespace Core.Menus
         public RadioMenu(ConsoleColor? defaultBackgroundColor = null, ConsoleColor? defaultTextColor = null,
             ConsoleColor? activeItemBackgroundColor = null, ConsoleColor activeItemTextColor = ConsoleColor.Blue,
             ConsoleColor? defaultDescriptionBackgroundColor = null,
-            ConsoleColor defaultDescriptionTextColor = ConsoleColor.Gray) : base(defaultBackgroundColor,
+            ConsoleColor defaultDescriptionTextColor = ConsoleColor.Gray,
+            int leftMarginOfMenu = 0, int rightMarginOfMenu = 0,
+            int defaultLeftMarginOfItems = 0, int defaultRightMarginOfItems = 4) : base(defaultBackgroundColor,
             defaultTextColor, activeItemBackgroundColor, activeItemTextColor, defaultDescriptionBackgroundColor,
-            defaultDescriptionTextColor)
+            defaultDescriptionTextColor, leftMarginOfMenu, rightMarginOfMenu, defaultLeftMarginOfItems,
+            defaultRightMarginOfItems)
         {
         }
 
@@ -62,14 +66,15 @@ namespace Core.Menus
         public RadioItem? Run()
         {
             var radioItems = Items.GetItems<RadioItem>().ToList();
-            InitIds(radioItems);
+            radioItems.InitIds();
             ResetColors();
 
-            var selectedId = FindNextActiveItem(radioItems, -1);
+            var selectedId = radioItems.FindNextActiveItem(-1);
+            var maxWidth = Items.GetMaxWidth();
             do
             {
                 Console.Clear();
-                PrintItems(Items, selectedId);
+                PrintItems(Items, selectedId, maxWidth);
 
                 if (!radioItems.Any())
                     return null;
@@ -80,7 +85,7 @@ namespace Core.Menus
                     if (consoleKey == ConsoleKey.Enter)
                         return radioItems.Single(item => item.Id == selectedId);
 
-                    var newSelectedId = FindSelectedId(radioItems, selectedId, consoleKey);
+                    var newSelectedId = radioItems.FindSelectedId(selectedId, consoleKey);
                     if (newSelectedId != selectedId)
                     {
                         selectedId = newSelectedId;
@@ -92,87 +97,98 @@ namespace Core.Menus
             } while (true);
         }
 
-        private static void InitIds(IReadOnlyList<RadioItem> radioItems)
-        {
-            for (var i = 0; i < radioItems.Count; i++)
-                radioItems[i].Id = i;
-        }
-
-        private void PrintItems(IEnumerable<object> items, int selectedId)
+        private void PrintItems(IEnumerable<Item> items, int selectedId, int maxWidth)
         {
             foreach (var item in items)
-                PrintItem(item, selectedId);
+                PrintWidthMargin(this, () => PrintItem(item, selectedId, maxWidth));
 
             ResetColors();
         }
 
-        private void PrintItem(object item, int selectedId)
+        private void PrintItem(Item obj, int selectedId, int maxWidth)
         {
-            var itemType = item.GetType();
-            if (itemType == typeof(RadioItem))
+            switch (obj)
             {
-                Print((RadioItem) item, selectedId);
+                case RadioItem radioItem:
+                    PrintWidthMargin(radioItem, () => Print(radioItem, radioItem.Id == selectedId));
+                    break;
+                case TextItem textItem:
+                    PrintWidthMargin(textItem, () => Print(textItem));
+                    break;
+                case SeparationItem separatorItem:
+                    PrintWidthMargin(separatorItem, () => Print(separatorItem, maxWidth));
+                    break;
+                default:
+                    throw new NotImplementedException($"Type {obj.GetType()} is not implemented.");
             }
-            else if (itemType == typeof(TextItem))
-            {
-                Print((TextItem) item, "\n");
-            }
-            else if (itemType == typeof(SeparationItem))
-            {
-                Print((SeparationItem) item);
-            }
-            else
-            {
-                throw new NotImplementedException($"Type {itemType} is not implemented.");
-            }
-        }
 
-        private void Print(SeparationItem separationItem)
-        {
-            SetColor(separationItem);
-            for (var i = 0; i < 20; i++) //TODO: ***
-                Console.Write(separationItem.Separator);
             Console.WriteLine();
         }
 
-        private void Print(RadioItem radioItem, int selectedId)
+        private void Print(SeparationItem separationItem, int width)
         {
-            var isActive = radioItem.Id == selectedId;
+            SetColor(separationItem);
 
+            var quotient = width / separationItem.MaxWidth;
+
+            var remainder = width % separationItem.MaxWidth;
+            remainder = remainder > width ? width : remainder;
+
+            separationItem.Separator.Print(quotient);
+            for (var i = 0; i < remainder; i++)
+                Console.Write(separationItem.Separator[i]);
+        }
+
+        private void Print(RadioItem radioItem, bool isActive)
+        {
             Action setColorAction = radioItem.IsDisable ? SetDisableItemColor :
                 isActive ? SetActiveItemColor : () => SetColor(radioItem.TextItems.First());
 
             var circleType = radioItem.IsDisable || !isActive ? Circle : BlackCircle;
 
-            const string separator = "        "; //TODO: ****
             Action printItems = radioItem.IsDisable || isActive
-                ? () => PrintTextItems(radioItem.TextItems, separator, false)
-                : () => PrintTextItems(radioItem.TextItems, separator);
+                ? () => PrintWidthMargin(radioItem.TextItems, false)
+                : () => PrintWidthMargin(radioItem.TextItems);
 
             setColorAction();
             Console.Write($"{circleType} ");
             printItems();
-            Console.WriteLine();
         }
 
-        private void PrintTextItems(IEnumerable<TextItem> textItems, string separator, bool setColor = true)
-        {
-            foreach (var textItem in textItems)
-                Print(textItem, separator, setColor);
-        }
-
-        private void Print(TextItem textItem, string separator, bool setColor = true)
+        private void Print(TextItem textItem, bool setColor = true)
         {
             if (setColor)
                 SetColor(textItem);
+
             Console.Write(textItem.Text);
-            Console.Write(separator);
+        }
+
+        private void PrintWidthMargin(IEnumerable<TextItem> textItems, bool setColor = true)
+        {
+            foreach (var textItem in textItems)
+                PrintWidthMargin(textItem, () => Print(textItem, setColor));
+        }
+
+        private void PrintWidthMargin(Obj obj, Action action)
+        {
+            var defaultLeftMargin = obj is Menu ? 0 : DefaultLeftMarginOfItems;
+            var defaultRightMargin = obj is Menu ? 0 : DefaultRightMarginOfItems;
+
+            " ".Print(obj.LeftMargin ?? defaultLeftMargin);
+            action();
+            " ".Print(obj.RightMargin ?? defaultRightMargin);
         }
 
         private void SetColor(SeparationItem separationItem)
         {
             Console.BackgroundColor = separationItem.BackgroundColor ?? DefaultBackgroundColor;
             Console.ForegroundColor = separationItem.TextColor ?? DefaultTextColor;
+        }
+
+        private void SetColor(TextItem textItem)
+        {
+            Console.BackgroundColor = textItem.BackgroundTextColor ?? DefaultBackgroundColor;
+            Console.ForegroundColor = textItem.TextColor ?? DefaultTextColor;
         }
 
         private void SetDisableItemColor()
@@ -187,53 +203,11 @@ namespace Core.Menus
             Console.ForegroundColor = ActiveItemTextColor;
         }
 
-        private void SetColor(TextItem textItem)
-        {
-            Console.BackgroundColor = textItem.BackgroundTextColor ?? DefaultBackgroundColor;
-            Console.ForegroundColor = textItem.TextColor ?? DefaultTextColor;
-        }
-
         private void ResetColors()
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.BackgroundColor = DefaultBackgroundColor;
             Console.ForegroundColor = DefaultTextColor;
-        }
-
-        private static int FindSelectedId(IReadOnlyList<RadioItem> radioItems, int currentSelectedId,
-            ConsoleKey consoleKey)
-        {
-            switch (consoleKey)
-            {
-                case ConsoleKey.DownArrow:
-                    return FindNextActiveItem(radioItems, currentSelectedId);
-                case ConsoleKey.UpArrow:
-                    return FindPrevActiveItem(radioItems, currentSelectedId);
-                default:
-                    return currentSelectedId;
-            }
-        }
-
-        private static int FindNextActiveItem(IReadOnlyList<RadioItem> radioItems, int currentId)
-        {
-            for (var i = currentId + 1; i < radioItems.Count; i++)
-            {
-                if (!radioItems[i].IsDisable)
-                    return i;
-            }
-
-            return currentId;
-        }
-
-        private static int FindPrevActiveItem(IReadOnlyList<RadioItem> radioItems, int currentId)
-        {
-            for (var i = currentId - 1; i >= 0; i--)
-            {
-                if (!radioItems[i].IsDisable)
-                    return i;
-            }
-
-            return currentId;
         }
     }
 }
