@@ -37,13 +37,13 @@ namespace Core.Menus
 
         public RadioMenu(ConsoleColor? defaultBackgroundColor = null, ConsoleColor? defaultTextColor = null,
             ConsoleColor? activeItemBackgroundColor = null, ConsoleColor activeItemTextColor = ConsoleColor.Blue,
-            ConsoleColor? defaultDescriptionBackgroundColor = null,
-            ConsoleColor defaultDescriptionTextColor = ConsoleColor.Gray,
+            ConsoleColor? disableItemBackgroundColor = null,
+            ConsoleColor disableItemTextColor = ConsoleColor.Gray,
             int leftMarginOfMenu = 0, int rightMarginOfMenu = 0,
             int defaultLeftMarginOfItems = 0, int defaultRightMarginOfItems = 4,
             int? circleLeftMargin = null, int? circleRightMargin = 1) : base(defaultBackgroundColor,
-            defaultTextColor, activeItemBackgroundColor, activeItemTextColor, defaultDescriptionBackgroundColor,
-            defaultDescriptionTextColor, leftMarginOfMenu, rightMarginOfMenu, defaultLeftMarginOfItems,
+            defaultTextColor, activeItemBackgroundColor, activeItemTextColor, disableItemBackgroundColor,
+            disableItemTextColor, leftMarginOfMenu, rightMarginOfMenu, defaultLeftMarginOfItems,
             defaultRightMarginOfItems)
         {
             CircleLeftMargin = circleLeftMargin ?? defaultLeftMarginOfItems;
