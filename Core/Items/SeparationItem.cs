@@ -16,7 +16,7 @@ namespace Core.Items
         public ConsoleColor? TextColor { get; set; }
 
         public SeparationItem(string separator = " ", ConsoleColor? backgroundColor = null,
-            ConsoleColor? textColor = null, int? leftMargin = 0, int? rightMargin = 0)
+            ConsoleColor? textColor = null, int? leftMargin = null, int? rightMargin = null)
         {
             _separator = separator;
             BackgroundColor = backgroundColor;

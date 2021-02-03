@@ -8,19 +8,46 @@ namespace Core.Menus
 {
     public class RadioMenu : Menu
     {
+        private int _circleLeftMargin;
+        private int _circleRightMargin;
         private const string Circle = "\u25CB";
         private const string BlackCircle = "\u25CF";
+
+        public int CircleLeftMargin
+        {
+            get => _circleLeftMargin;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(CircleLeftMargin));
+                _circleLeftMargin = value;
+            }
+        }
+
+        public int CircleRightMargin
+        {
+            get => _circleRightMargin;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(CircleRightMargin));
+                _circleRightMargin = value;
+            }
+        }
 
         public RadioMenu(ConsoleColor? defaultBackgroundColor = null, ConsoleColor? defaultTextColor = null,
             ConsoleColor? activeItemBackgroundColor = null, ConsoleColor activeItemTextColor = ConsoleColor.Blue,
             ConsoleColor? defaultDescriptionBackgroundColor = null,
             ConsoleColor defaultDescriptionTextColor = ConsoleColor.Gray,
             int leftMarginOfMenu = 0, int rightMarginOfMenu = 0,
-            int defaultLeftMarginOfItems = 0, int defaultRightMarginOfItems = 4) : base(defaultBackgroundColor,
+            int defaultLeftMarginOfItems = 0, int defaultRightMarginOfItems = 4,
+            int? circleLeftMargin = null, int? circleRightMargin = 1) : base(defaultBackgroundColor,
             defaultTextColor, activeItemBackgroundColor, activeItemTextColor, defaultDescriptionBackgroundColor,
             defaultDescriptionTextColor, leftMarginOfMenu, rightMarginOfMenu, defaultLeftMarginOfItems,
             defaultRightMarginOfItems)
         {
+            CircleLeftMargin = circleLeftMargin ?? defaultLeftMarginOfItems;
+            CircleRightMargin = circleRightMargin ?? defaultRightMarginOfItems;
         }
 
         public RadioMenu AddText(TextItem textItem)
@@ -30,11 +57,11 @@ namespace Core.Menus
         }
 
         public RadioMenu AddText(string text, ConsoleColor? backgroundTextColor = null,
-            ConsoleColor? textColor = null, int? leftMargin = 0, int? rightMargin = 0) =>
+            ConsoleColor? textColor = null, int? leftMargin = null, int? rightMargin = null) =>
             AddText(new TextItem(text, backgroundTextColor, textColor, leftMargin, rightMargin));
 
         public RadioMenu AddSeparation(string separator = " ", ConsoleColor? backgroundColor = null,
-            ConsoleColor? textColor = null, int? leftMargin = 0, int? rightMargin = 0) =>
+            ConsoleColor? textColor = null, int? leftMargin = null, int? rightMargin = null) =>
             AddSeparation(new SeparationItem(separator, backgroundColor, textColor, leftMargin, rightMargin));
 
         public RadioMenu AddSeparation(SeparationItem separationItem)
@@ -72,7 +99,7 @@ namespace Core.Menus
             var maxWidth = Items.GetMaxWidth(DefaultLeftMarginOfItems, DefaultRightMarginOfItems);
             do
             {
-                Console.Clear(); //○ text    text    text
+                Console.Clear();
                 PrintItems(Items, selectedId, maxWidth);
 
                 if (!radioItems.Any())
@@ -150,7 +177,7 @@ namespace Core.Menus
                 : () => PrintWidthMargin(radioItem.TextItems);
 
             setColorAction();
-            Console.Write($"{circleType} ");
+            PrintWidthMargin(circleType, CircleLeftMargin, CircleRightMargin);
             printItems();
         }
 
@@ -176,6 +203,13 @@ namespace Core.Menus
             " ".Print(obj.LeftMargin ?? defaultLeftMargin);
             action();
             " ".Print(obj.RightMargin ?? defaultRightMargin);
+        }
+
+        private void PrintWidthMargin(string text, int leftMargin, int rightMargin)
+        {
+            " ".Print(leftMargin);
+            Console.Write(text);
+            " ".Print(rightMargin);
         }
 
         private void SetColor(SeparationItem separationItem)
