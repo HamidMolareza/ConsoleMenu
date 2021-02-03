@@ -65,7 +65,8 @@ namespace Core.Menus
             ConsoleColor disableItemTextColor = ConsoleColor.Gray,
             int leftMarginOfMenu = 0, int rightMarginOfMenu = 0,
             int defaultLeftMarginOfItems = 0, int defaultRightMarginOfItems = 4,
-            int? circleLeftMargin = null, int? circleRightMargin = 1, int topMargin = 0, int bottomMargin = 0) : base(defaultBackgroundColor,
+            int? circleLeftMargin = null, int? circleRightMargin = 1, int topMargin = 0, int bottomMargin = 0) : base(
+            defaultBackgroundColor,
             defaultTextColor, activeItemBackgroundColor, activeItemTextColor, disableItemBackgroundColor,
             disableItemTextColor, leftMarginOfMenu, rightMarginOfMenu, defaultLeftMarginOfItems,
             defaultRightMarginOfItems)
@@ -133,10 +134,12 @@ namespace Core.Menus
 
             var selectedId = radioItems.FindNextActiveItem(-1);
             var maxWidth = Items.GetMaxWidth(DefaultLeftMarginOfItems, DefaultRightMarginOfItems);
+            var items = AddMarginTopAndBottom();
+
             do
             {
                 Console.Clear();
-                PrintItems(Items, selectedId, maxWidth);
+                PrintItems(items, selectedId, maxWidth);
 
                 if (!radioItems.Any())
                     return null;
@@ -159,17 +162,23 @@ namespace Core.Menus
             } while (true);
         }
 
+        private List<Item> AddMarginTopAndBottom()
+        {
+            var items = new List<Item>(TopMargin + BottomMargin + Items.Count);
+            for (var i = 0; i < TopMargin; i++)
+                items.Insert(0, new SeparationItem());
+
+            items.AddRange(Items);
+
+            for (var i = 0; i < BottomMargin; i++)
+                items.Add(new SeparationItem());
+
+            return items;
+        }
+
         private void PrintItems(IEnumerable<Item> items, int selectedId, int maxWidth)
         {
-            var list = items.ToList();
-            
-            //Adds margin top & bottom
-            for (var i = 0; i < TopMargin; i++)
-                list.Insert(0, new SeparationItem());
-            for (var i = 0; i < BottomMargin; i++)
-                list.Add(new SeparationItem());
-            
-            foreach (var item in list)
+            foreach (var item in items)
                 PrintWidthMargin(this, () => PrintItem(item, selectedId, maxWidth));
 
             ResetColors();
