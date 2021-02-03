@@ -134,12 +134,12 @@ namespace Core.Menus
 
             var selectedId = radioItems.FindNextActiveItem(-1);
             var maxWidth = Items.GetMaxWidth(DefaultLeftMarginOfItems, DefaultRightMarginOfItems);
-            var items = AddMarginTopAndBottom();
 
             do
             {
                 Console.Clear();
-                PrintItems(items, selectedId, maxWidth);
+                var id = selectedId;
+                PrintWidthMarginTopAndBottom(maxWidth, () => PrintItems(Items, id, maxWidth));
 
                 if (!radioItems.Any())
                     return null;
@@ -162,26 +162,30 @@ namespace Core.Menus
             } while (true);
         }
 
-        private List<Item> AddMarginTopAndBottom()
-        {
-            var items = new List<Item>(TopMargin + BottomMargin + Items.Count);
-            for (var i = 0; i < TopMargin; i++)
-                items.Insert(0, new SeparationItem());
-
-            items.AddRange(Items);
-
-            for (var i = 0; i < BottomMargin; i++)
-                items.Add(new SeparationItem());
-
-            return items;
-        }
-
         private void PrintItems(IEnumerable<Item> items, int selectedId, int maxWidth)
         {
             foreach (var item in items)
                 PrintWidthMargin(this, () => PrintItem(item, selectedId, maxWidth));
+        }
 
-            ResetColors();
+        private void PrintWidthMarginTopAndBottom(int width, Action action)
+        {
+            var separationItem = new SeparationItem();
+            for (var i = 0; i < TopMargin; i++)
+            {
+                PrintWidthMargin(this,
+                    () => PrintWidthMargin(separationItem, () => Print(separationItem, width)));
+                Console.WriteLine();
+            }
+
+            action();
+            
+            for (var i = 0; i < BottomMargin; i++)
+            {
+                PrintWidthMargin(this,
+                    () => PrintWidthMargin(separationItem, () => Print(separationItem, width)));
+                Console.WriteLine();
+            }
         }
 
         private void PrintItem(Item obj, int selectedId, int maxWidth)
@@ -230,7 +234,7 @@ namespace Core.Menus
                 : () => PrintWidthMargin(radioItem.TextItems);
 
             setColorAction();
-            PrintWidthMargin(circleType, CircleLeftMargin, CircleRightMargin);
+            circleType.PrintWidthMargin(CircleLeftMargin, CircleRightMargin);
             printItems();
         }
 
@@ -256,13 +260,6 @@ namespace Core.Menus
             " ".Print(obj.LeftMargin ?? defaultLeftMargin);
             action();
             " ".Print(obj.RightMargin ?? defaultRightMargin);
-        }
-
-        private void PrintWidthMargin(string text, int leftMargin, int rightMargin)
-        {
-            " ".Print(leftMargin);
-            Console.Write(text);
-            " ".Print(rightMargin);
         }
 
         private void SetColor(SeparationItem separationItem)

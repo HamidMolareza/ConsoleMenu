@@ -18,5 +18,12 @@ namespace Core.Extensions
             for (var i = 0; i < count; i++)
                 Console.Write(str);
         }
+        
+        public static void PrintWidthMargin(this string text, int leftMargin, int rightMargin)
+        {
+            " ".Print(leftMargin);
+            Console.Write(text);
+            " ".Print(rightMargin);
+        }
     }
 }
