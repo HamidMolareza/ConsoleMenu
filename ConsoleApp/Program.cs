@@ -19,6 +19,7 @@ namespace ConsoleApp
                     .AddText("text", textColor: ConsoleColor.Gray))
                 .AddSeparation()
                 .AddItem("Cancel")
+                .SetMarginAuto()
                 .Run();
 
             Console.WriteLine($"Selected ID: {selectedItem?.Id}");

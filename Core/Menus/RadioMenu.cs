@@ -89,6 +89,16 @@ namespace Core.Menus
             return this;
         }
 
+        public RadioMenu SetMarginAuto()
+        {
+            var itemsWidth = Items.GetMaxWidth(DefaultLeftMarginOfItems, DefaultRightMarginOfItems);
+            var freeSpace = Console.WindowWidth - itemsWidth;
+            if (freeSpace >= 0)
+                LeftMargin = (int) Math.Floor(freeSpace / 2.0);
+
+            return this;
+        }
+
         public RadioItem? Run()
         {
             var radioItems = Items.GetItems<RadioItem>().ToList();
