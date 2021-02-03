@@ -10,8 +10,6 @@ namespace Core.Menus
     {
         private int _circleLeftMargin;
         private int _circleRightMargin;
-        private int _topMargin;
-        private int _bottomMargin;
         private const string Circle = "\u25CB";
         private const string BlackCircle = "\u25CF";
 
@@ -37,28 +35,6 @@ namespace Core.Menus
             }
         }
 
-        public int TopMargin
-        {
-            get => _topMargin;
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(TopMargin));
-                _topMargin = value;
-            }
-        }
-
-        public int BottomMargin
-        {
-            get => _bottomMargin;
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(BottomMargin));
-                _bottomMargin = value;
-            }
-        }
-
         public RadioMenu(ConsoleColor? defaultBackgroundColor = null, ConsoleColor? defaultTextColor = null,
             ConsoleColor? activeItemBackgroundColor = null, ConsoleColor activeItemTextColor = ConsoleColor.Blue,
             ConsoleColor? disableItemBackgroundColor = null,
@@ -69,12 +45,10 @@ namespace Core.Menus
             defaultBackgroundColor,
             defaultTextColor, activeItemBackgroundColor, activeItemTextColor, disableItemBackgroundColor,
             disableItemTextColor, leftMarginOfMenu, rightMarginOfMenu, defaultLeftMarginOfItems,
-            defaultRightMarginOfItems)
+            defaultRightMarginOfItems, topMargin, bottomMargin)
         {
             CircleLeftMargin = circleLeftMargin ?? defaultLeftMarginOfItems;
             CircleRightMargin = circleRightMargin ?? defaultRightMarginOfItems;
-            TopMargin = topMargin;
-            BottomMargin = bottomMargin;
         }
 
         public RadioMenu AddText(TextItem textItem)
@@ -179,7 +153,7 @@ namespace Core.Menus
             }
 
             action();
-            
+
             for (var i = 0; i < BottomMargin; i++)
             {
                 PrintWidthMargin(this,
