@@ -6,7 +6,7 @@ namespace Core.Extensions
 {
     public static class ItemExtensions
     {
-        public static int GetMaxWidth(this IEnumerable<Item> items) =>
-            items.Select(item => item.MaxWidth).Max(); //TODO: ***
+        public static int GetMaxWidth(this IEnumerable<Item> items, int defaultLeftMargin, int defaultRightMargin) =>
+            items.Select(item => item.GetWidth(defaultLeftMargin, defaultRightMargin)).Max();
     }
 }

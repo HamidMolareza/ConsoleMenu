@@ -17,15 +17,9 @@ namespace Core.Items
 
         public bool IsDisable { get; set; } = false;
 
-        public override int MaxWidth
-        {
-            get => GetMaxWidth(TextItems);
-            protected set { }
-        }
-
         public RadioItem(string text, ConsoleColor? backgroundTextColor = null,
             ConsoleColor? textColor = null, bool isDisable = false,
-            int? leftMargin = null, int? rightMargin = null)
+            int? leftMargin = 0, int? rightMargin = 0)
         {
             if (string.IsNullOrWhiteSpace(text))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
@@ -38,7 +32,7 @@ namespace Core.Items
         }
 
         public RadioItem(List<TextItem> textItems, bool isDisable = false,
-            int? leftMargin = null, int? rightMargin = null)
+            int? leftMargin = 0, int? rightMargin = 0)
         {
             if (textItems is null || !textItems.Any())
                 throw new ArgumentException("Value can not be null or empty.", nameof(textItems));
@@ -55,10 +49,14 @@ namespace Core.Items
         }
 
         public RadioItem AddText(string text, ConsoleColor? backgroundTextColor = null,
-            ConsoleColor? textColor = null) =>
-            AddText(new TextItem(text, backgroundTextColor, textColor));
+            ConsoleColor? textColor = null,int? leftMargin = null, int? rightMargin = null) =>
+            AddText(new TextItem(text, backgroundTextColor, textColor,leftMargin, rightMargin));
 
-        private static int GetMaxWidth(IEnumerable<TextItem> textItems) =>
-            textItems.Select(textItem => textItem.Text.Length).Max();
+        public override int GetWidth(int defaultLeftMargin, int defaultRightMargin)
+        {
+            var margin = (LeftMargin ?? defaultLeftMargin) + (RightMargin ?? defaultRightMargin);
+            var itemsWidth = TextItems.Sum(textItem => textItem.GetWidth(defaultLeftMargin, defaultRightMargin));
+            return margin + itemsWidth;
+        }
     }
 }

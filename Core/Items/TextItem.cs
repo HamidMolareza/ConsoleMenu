@@ -20,12 +20,6 @@ namespace Core.Items
         public ConsoleColor? BackgroundTextColor { get; set; }
         public ConsoleColor? TextColor { get; set; }
 
-        public override int MaxWidth
-        {
-            get => Text.Length;
-            protected set { }
-        }
-
         public TextItem(string text, ConsoleColor? backgroundTextColor = null, ConsoleColor? textColor = null,
             int? leftMargin = null, int? rightMargin = null)
         {
@@ -35,5 +29,8 @@ namespace Core.Items
             LeftMargin = leftMargin;
             RightMargin = rightMargin;
         }
+
+        public override int GetWidth(int defaultLeftMargin, int defaultRightMargin) =>
+            Text.Length + (LeftMargin ?? defaultLeftMargin) + (RightMargin ?? defaultRightMargin);
     }
 }

@@ -15,14 +15,8 @@ namespace Core.Items
         public ConsoleColor? BackgroundColor { get; set; }
         public ConsoleColor? TextColor { get; set; }
 
-        public override int MaxWidth
-        {
-            get => Separator.Length;
-            protected set { }
-        }
-
         public SeparationItem(string separator = " ", ConsoleColor? backgroundColor = null,
-            ConsoleColor? textColor = null, int? leftMargin = null, int? rightMargin = null)
+            ConsoleColor? textColor = null, int? leftMargin = 0, int? rightMargin = 0)
         {
             _separator = separator;
             BackgroundColor = backgroundColor;
@@ -30,5 +24,8 @@ namespace Core.Items
             LeftMargin = leftMargin;
             RightMargin = rightMargin;
         }
+        
+        public override int GetWidth(int defaultLeftMargin, int defaultRightMargin) =>
+            Separator.Length + LeftMargin ?? defaultLeftMargin + RightMargin ?? defaultRightMargin;
     }
 }

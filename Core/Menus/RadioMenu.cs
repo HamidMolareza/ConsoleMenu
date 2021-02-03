@@ -30,14 +30,12 @@ namespace Core.Menus
         }
 
         public RadioMenu AddText(string text, ConsoleColor? backgroundTextColor = null,
-            ConsoleColor? textColor = null) =>
-            AddText(new TextItem(text, backgroundTextColor, textColor));
+            ConsoleColor? textColor = null, int? leftMargin = 0, int? rightMargin = 0) =>
+            AddText(new TextItem(text, backgroundTextColor, textColor, leftMargin, rightMargin));
 
-        public RadioMenu AddSeparation() =>
-            AddSeparation(new SeparationItem());
-
-        public RadioMenu AddSeparation(string separator) =>
-            AddSeparation(new SeparationItem(separator));
+        public RadioMenu AddSeparation(string separator = " ", ConsoleColor? backgroundColor = null,
+            ConsoleColor? textColor = null, int? leftMargin = 0, int? rightMargin = 0) =>
+            AddSeparation(new SeparationItem(separator, backgroundColor, textColor, leftMargin, rightMargin));
 
         public RadioMenu AddSeparation(SeparationItem separationItem)
         {
@@ -52,8 +50,9 @@ namespace Core.Menus
         }
 
         public RadioMenu AddItem(string text, ConsoleColor? backgroundTextColor = null,
-            ConsoleColor? textColor = null, bool isDisable = false) =>
-            AddItem(new RadioItem(text, backgroundTextColor, textColor, isDisable));
+            ConsoleColor? textColor = null, bool isDisable = false,
+            int? leftMargin = 0, int? rightMargin = 0) =>
+            AddItem(new RadioItem(text, backgroundTextColor, textColor, isDisable, leftMargin, rightMargin));
 
         public RadioMenu AddItems(IEnumerable<RadioItem> radioItems)
         {
@@ -70,10 +69,10 @@ namespace Core.Menus
             ResetColors();
 
             var selectedId = radioItems.FindNextActiveItem(-1);
-            var maxWidth = Items.GetMaxWidth();
+            var maxWidth = Items.GetMaxWidth(DefaultLeftMarginOfItems, DefaultRightMarginOfItems);
             do
             {
-                Console.Clear();
+                Console.Clear(); //○ text    text    text
                 PrintItems(Items, selectedId, maxWidth);
 
                 if (!radioItems.Any())
@@ -129,9 +128,9 @@ namespace Core.Menus
         {
             SetColor(separationItem);
 
-            var quotient = width / separationItem.MaxWidth;
+            var quotient = width / separationItem.Separator.Length;
 
-            var remainder = width % separationItem.MaxWidth;
+            var remainder = width % separationItem.Separator.Length;
             remainder = remainder > width ? width : remainder;
 
             separationItem.Separator.Print(quotient);
