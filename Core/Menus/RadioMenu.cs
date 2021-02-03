@@ -10,6 +10,8 @@ namespace Core.Menus
     {
         private int _circleLeftMargin;
         private int _circleRightMargin;
+        private int _topMargin;
+        private int _bottomMargin;
         private const string Circle = "\u25CB";
         private const string BlackCircle = "\u25CF";
 
@@ -35,19 +37,43 @@ namespace Core.Menus
             }
         }
 
+        public int TopMargin
+        {
+            get => _topMargin;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(TopMargin));
+                _topMargin = value;
+            }
+        }
+
+        public int BottomMargin
+        {
+            get => _bottomMargin;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(BottomMargin));
+                _bottomMargin = value;
+            }
+        }
+
         public RadioMenu(ConsoleColor? defaultBackgroundColor = null, ConsoleColor? defaultTextColor = null,
             ConsoleColor? activeItemBackgroundColor = null, ConsoleColor activeItemTextColor = ConsoleColor.Blue,
             ConsoleColor? disableItemBackgroundColor = null,
             ConsoleColor disableItemTextColor = ConsoleColor.Gray,
             int leftMarginOfMenu = 0, int rightMarginOfMenu = 0,
             int defaultLeftMarginOfItems = 0, int defaultRightMarginOfItems = 4,
-            int? circleLeftMargin = null, int? circleRightMargin = 1) : base(defaultBackgroundColor,
+            int? circleLeftMargin = null, int? circleRightMargin = 1, int topMargin = 0, int bottomMargin = 0) : base(defaultBackgroundColor,
             defaultTextColor, activeItemBackgroundColor, activeItemTextColor, disableItemBackgroundColor,
             disableItemTextColor, leftMarginOfMenu, rightMarginOfMenu, defaultLeftMarginOfItems,
             defaultRightMarginOfItems)
         {
             CircleLeftMargin = circleLeftMargin ?? defaultLeftMarginOfItems;
             CircleRightMargin = circleRightMargin ?? defaultRightMarginOfItems;
+            TopMargin = topMargin;
+            BottomMargin = bottomMargin;
         }
 
         public RadioMenu AddText(TextItem textItem)
@@ -135,7 +161,15 @@ namespace Core.Menus
 
         private void PrintItems(IEnumerable<Item> items, int selectedId, int maxWidth)
         {
-            foreach (var item in items)
+            var list = items.ToList();
+            
+            //Adds margin top & bottom
+            for (var i = 0; i < TopMargin; i++)
+                list.Insert(0, new SeparationItem());
+            for (var i = 0; i < BottomMargin; i++)
+                list.Add(new SeparationItem());
+            
+            foreach (var item in list)
                 PrintWidthMargin(this, () => PrintItem(item, selectedId, maxWidth));
 
             ResetColors();
