@@ -9,14 +9,18 @@
 
 ### Quick Setup
 
+![alt text](https://github.com/HamidMolareza/ConsoleMenu/blob/main/Images/basic-menu.png)
+
 ```csharp
 var selectedItem = new RadioMenu()
-    .AddText("Title")
-    .AddSeparation("-")
-    .AddItem("Item-1", isDisable: true)
+    .AddText("Title: Basic Menu")
+    .AddSeparation("=")
+    .AddItem("Item-1")
     .AddItem("Item-2")
+    .AddItem("Item-3")
     .AddSeparation()
     .AddItem("Cancel")
+    .SetMarginAuto()
     .Run();
 
 Console.WriteLine($"Selected ID: {selectedItem?.Id}");
