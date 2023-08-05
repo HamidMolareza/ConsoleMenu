@@ -1,0 +1,8 @@
+{
+  "version": "0.0.0",
+  "devDependencies": {
+    "@action-validator/cli": "^0.5.1",
+    "@action-validator/core": "^0.5.1",
+    "standard-version": "^9.5.0"
+  }
+}
