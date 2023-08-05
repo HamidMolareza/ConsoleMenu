@@ -16,11 +16,8 @@
 
 [![code with love by HamidMolareza](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-HamidMolareza-ff1414.svg?style=flat-square)](https://github.com/HamidMolareza)
 
-![Build Status](https://github.com/HamidMolareza/ConsoleMenu/actions/workflows/ACTION.yaml/badge.svg?branch=BRANCH)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/HamidMolareza/ConsoleMenu)
-
 ![GitHub](https://img.shields.io/github/license/HamidMolareza/ConsoleMenu)
-
 [![Pull Requests welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg?style=flat-square)](https://github.com/HamidMolareza/ConsoleMenu/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
 
 </div>
